@@ -7,6 +7,7 @@ CS 421 - Automata Theory and Compiler Construction
 #include <iostream>
 #include <string>
 #include <regex>
+#include "dfa.h"
 using namespace std;
 
 void PreProcessBuffer(string filename);
@@ -21,6 +22,9 @@ int main(int argc, char** argv)
 	// Call the pre-processing buffer here
 
 	// Call the processing buffer here
+
+	// any test cases or debugging functions should go here.
+	cout << dfa_PROGRAM("PROGRAMME ") << endl;
 
 	system("PAUSE");
 	return 0;

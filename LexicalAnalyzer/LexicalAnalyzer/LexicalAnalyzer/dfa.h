@@ -5,7 +5,39 @@
 #include <regex>
 using namespace std;
 
-int dfa_PROGRAM(string line);
+// To save us the trouble of remembering the correct token IDs,
+// let's use an enumeration to 'save' them in the program
+enum TokenID
+{
+	PROGRAM = 1,
+	VAR,
+	BEGIN,
+	END,
+	ENDP,
+	INTEGER,
+	FOR,
+	READ,
+	WRITE,
+	TO,
+	DO,
+	SEMICOLON,
+	COLON,
+	COMMA,
+	EQUALS,
+	PLUS,
+	MINUS,
+	TIMES,
+	DIV,
+	LEFTPAREN,
+	RIGHTPAREN,
+	IDENTIFIER,
+	NUM
+};
+
+int dfaTextToken(string line, string expr, int goalTokenID);
+int getToken(string line, string expr, int goalTokenID);
+
+/*
 int dfa_VAR(string line);
 int dfa_BEGIN(string line);
 int dfa_END(string line);
@@ -25,3 +57,4 @@ int dfa_MINUS(string line);
 int dfa_TIMES(string line);
 int dfa_LEFTPAREN(string line);
 int dfa_RIGHTPAREN(string line);
+*/

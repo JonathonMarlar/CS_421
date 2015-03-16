@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <regex>
+#include <cctype>
 using namespace std;
 
 // To save us the trouble of remembering the correct token IDs,
@@ -36,7 +37,6 @@ enum TokenID
 
 int dfaTextToken(string line, string expr, int goalTokenID);
 int getToken(string line, string expr, int goalTokenID);
-
 /*
 int dfa_VAR(string line);
 int dfa_BEGIN(string line);

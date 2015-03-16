@@ -8,6 +8,7 @@ CS 421 - Automata Theory and Compiler Construction
 #include <string>
 #include <fstream>
 #include <regex>
+#include <cctype>
 #include "dfa.h"
 using namespace std;
 
@@ -21,12 +22,12 @@ int main(int argc, char** argv)
 	// Set up the symbol table here
 
 	// Call the pre-processing buffer here
+	PreProcessBuffer("example.txt");
 
 	// Call the processing buffer here
-	ProcessBuffer("example.txt");
+	ProcessBuffer("clean.txt");
 
 	// any test cases or debugging functions should go here.
-	// cout << dfaTextToken("PROGRAMMEEEEEEEEEEI ", "PROGRAM", PROGRAM) << endl;
 
 	system("PAUSE");
 	return 0;
@@ -38,14 +39,38 @@ PreProcessBuffer:
 	- Takes out any comment lines (i.e. (* ... *)
 	- Condenses any extraneous whitespace to a single space (' ')
 	- This new format will be saved to a new file
+	cleanedFile << line << endl;
 */
 void PreProcessBuffer(string filename)
 {
-	// get rid of comment lines
-	// collapse extraneous whitespace to a single space
-	// convert character case
-	// save this new format to a file
-	// maybe return new file as a string?
+	string line;
+	ifstream codeFile(filename);
+	ofstream cleanedFile("clean.txt");
+
+	if (codeFile.is_open() && cleanedFile.is_open())
+	{
+		while (getline(codeFile, line))
+		{
+			// we don't want to do anything until we hit a non-whitespace character
+			char* it = &line[0];
+			while (*it != NULL)
+			{
+				if (isspace(*it))
+				{
+					if (*it != line[0] && !isspace(*(it - 1)))
+						cleanedFile << *it;
+				}
+				else
+				{
+					cleanedFile << *it;
+				}
+				it++;
+			}
+			cleanedFile << endl;
+		}
+		cleanedFile.close();
+		codeFile.close();
+	}
 }
 
 /*
@@ -84,7 +109,7 @@ void ProcessBuffer(string filename)
 					temp = temp + *lookahead;
 					lookahead++;
 
-					if (temp.length() == 16 || *lookahead == NULL || *lookahead == ';')
+					if (temp.length() == 16 || *lookahead == NULL || *lookahead == ';' || *lookahead == '(' || *(lookahead-1) == '(' || *lookahead == ',' || *lookahead == ')')
 						break;
 				}
 
@@ -146,27 +171,27 @@ void ProcessBuffer(string filename)
 				} break;
 				case ',':
 				{
-					cout << "\t" << getToken(temp, ",", COMMA) << " " << temp << endl;
+					cout << "\t" << getToken(temp, "\\,", COMMA) << " " << temp << endl;
 				} break;
 				case '+':
 				{
-					cout << "\t" << getToken(temp, "+", PLUS) << " " << temp << endl;
+					cout << "\t" << getToken(temp, "\\+", PLUS) << " " << temp << endl;
 				} break;
 				case '-':
 				{
-					cout << "\t" << getToken(temp, "-", MINUS) << " " << temp << endl;
+					cout << "\t" << getToken(temp, "\\-", MINUS) << " " << temp << endl;
 				} break;
 				case '*':
 				{
-					cout << "\t" << getToken(temp, "*", TIMES) << " " << temp << endl;
+					cout << "\t" << getToken(temp, "\\*", TIMES) << " " << temp << endl;
 				} break;
 				case '(':
 				{
-					cout << "\t" << getToken(temp, "(", LEFTPAREN) << " " << temp << endl;
+					cout << "\t" << getToken(temp, "\\(", LEFTPAREN) << " " << temp << endl;
 				} break;
 				case ')':
 				{
-					cout << "\t" << getToken(temp, ")", RIGHTPAREN) << " " << temp << endl;
+					cout << "\t" << getToken(temp, "\\)", RIGHTPAREN) << " " << temp << endl;
 				} break;
 				case '0': case '1': case '2': case '3': case '4': case '5':
 				case '6': case '7': case '8': case '9':
@@ -180,7 +205,7 @@ void ProcessBuffer(string filename)
 				}
 
 				// we need to make sure the pointer ahead isn't null before jumping the river
-				if (*lookahead != NULL && *lookahead != ';')
+				if (*lookahead != NULL && *lookahead != ';' && *lookahead != ',' && *lookahead != '(' && *lookahead != ')')
 					start = lookahead + 1;
 				else
 					start = lookahead;

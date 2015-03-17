@@ -1,14 +1,3 @@
-First 80 columns:
-* Source line
-
-The rest:
-* Token
-* Info
-
-1	{ Comment }
-2	PROGRAM AVERAGE				1	-
-								24	AVERAGE
-3	VAR 						2
-4	SUM							24	SUM
-								14	,
-								
+# Lexical Analyzer
+### CS 421 - Automata Theory & Compiler Construction
+This program was developed to scan in, letter by letter, code written in MINI-P (a miniaturized version of Pascal) that will determine tokens via a regular expression, and give feedback concerning tokens found and errors occurring while scanning.

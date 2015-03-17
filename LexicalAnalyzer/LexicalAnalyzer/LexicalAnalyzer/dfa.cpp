@@ -61,3 +61,16 @@ int getToken(string line, string expr, int goalTokenID)
 
 	return tokenID;
 }
+
+bool getDelimiter(char n)
+{
+	string delimiters = " ;:,()";
+
+	for (int i = 0; i < delimiters.length(); i++)
+	{
+		if (n == delimiters[i])
+			return true;
+	}
+
+	return false;
+}

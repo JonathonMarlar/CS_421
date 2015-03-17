@@ -37,6 +37,7 @@ enum TokenID
 
 int dfaTextToken(string line, string expr, int goalTokenID);
 int getToken(string line, string expr, int goalTokenID);
+bool getDelimiter(char n);
 /*
 int dfa_VAR(string line);
 int dfa_BEGIN(string line);

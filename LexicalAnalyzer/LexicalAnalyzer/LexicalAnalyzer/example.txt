@@ -1,4 +1,7 @@
-PROGRAM AVERAGE
+(* This is a comment *)
+(* This is a
+multiline comment *)
+program AVERAGE
 VAR
 	SUM, VALUE, AVERAGE, I : INTEGER
 BEGIN

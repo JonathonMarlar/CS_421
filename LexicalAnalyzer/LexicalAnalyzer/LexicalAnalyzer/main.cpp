@@ -46,6 +46,7 @@ void PreProcessBuffer(string filename)
 	string line;
 	ifstream codeFile(filename);
 	ofstream cleanedFile("clean.txt");
+	bool inComment = false;
 
 	if (codeFile.is_open() && cleanedFile.is_open())
 	{
@@ -55,14 +56,29 @@ void PreProcessBuffer(string filename)
 			char* it = &line[0];
 			while (*it != NULL)
 			{
-				if (isspace(*it))
+				if (inComment == false)
 				{
-					if (*it != line[0] && !isspace(*(it - 1)))
-						cleanedFile << *it;
+					if (isspace(*it))
+					{
+						if (*it != line[0] && !isspace(*(it - 1)))
+							cleanedFile << *it;
+					}
+					else if (*it == '(' && *(it + 1) == '*')
+					{
+						inComment = true;
+					}
+					else
+					{
+						cleanedFile << (char) toupper(*it);
+					}
 				}
 				else
 				{
-					cleanedFile << *it;
+					if (*it == '*' && *(it + 1) == ')')
+					{
+						inComment = false;
+						it++;
+					}
 				}
 				it++;
 			}
@@ -205,7 +221,7 @@ void ProcessBuffer(string filename)
 				}
 
 				// we need to make sure the pointer ahead isn't null before jumping the river
-				if (*lookahead != NULL && *lookahead != ';' && *lookahead != ',' && *lookahead != '(' && *lookahead != ')')
+				if (*lookahead != NULL && *lookahead != ';' && *lookahead != ',' && *lookahead != '(' && *(lookahead-1) != '(' && *lookahead != ')')
 					start = lookahead + 1;
 				else
 					start = lookahead;

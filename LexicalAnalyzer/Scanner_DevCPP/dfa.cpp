@@ -2,43 +2,9 @@
 #include <string>
 #include <regex>
 #include <cctype>
+#include <unordered_map>
 #include "dfa.h"
 using namespace std;
-
-/*
-dfa_*:
-- Takes in a line string
-- Letter by letter, checks until there is a space (or max identifier of 16 chars
-- Checks against regular expression (or DFA) and changes tokens accordingly
-- Returns the token ID
-*/
-/*
-int dfaTextToken(string line, string expr, int goalTokenID)
-{
-	// it can be an identifier if it isn't PROGRAM
-	int tokenID = IDENTIFIER;
-	regex r(expr);
-	char* lookahead = &line[0];
-	string temp = "";
-
-	// the lookahead will continue until it finds a space or is longer than 16 chars
-	while (*lookahead != ' ')
-	{
-		// add this to temp
-		temp = temp + *lookahead;
-		lookahead++;
-
-		if (temp.length() == 16)
-			break;
-	}
-
-	// if it matches our DFA, then the token ID changes
-	if (regex_match(temp, r))
-		tokenID = goalTokenID;
-
-	return tokenID;
-}
-*/
 
 /*
 getToken:
@@ -55,16 +21,42 @@ int getToken(string line, string expr, int goalTokenID)
 		tokenID = goalTokenID;
 
 	// if it's still an identifier, we need to check if it's legit
-	regex id("(A-Z)+(A-Z0-9_)*");
-	if (tokenID == IDENTIFIER && !regex_match(line, id))
-		tokenID = -1;
+	else if (goalTokenID == IDENTIFIER)
+	{
+		for (int i = 0; i < line.length(); i++)
+		{
+			if (!(isalnum(line[i]) || line[i] == '_'))
+				tokenID = -1;
+		}
+	}
+	
+	// or it could be a number
+	else if (goalTokenID == NUM)
+	{
+		for (int i = 0; i < line.length(); i++)
+		{
+			if (!isdigit(line[i]))
+			{
+				tokenID = -1;
+				break;
+			}
+			else
+				tokenID = goalTokenID;		
+		}
+	}
 
 	return tokenID;
 }
 
-bool getDelimiter(char n)
+/*
+isDelimiter:
+- Takes in a scharacter
+- Checks against a list of potential delimiters
+- Returns true if the character matched anything in the list
+*/
+bool isDelimiter(char n)
 {
-	string delimiters = " ;:,()";
+	string delimiters = ";:,()";
 
 	for (int i = 0; i < delimiters.length(); i++)
 	{

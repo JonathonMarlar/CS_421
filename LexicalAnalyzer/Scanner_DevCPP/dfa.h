@@ -35,5 +35,11 @@ enum TokenID
 	NUM
 };
 
+struct Symbol
+{
+	string name;
+	int tokenCode;
+};
+
 int getToken(string line, string expr, int goalTokenID);
 bool isDelimiter(char n);

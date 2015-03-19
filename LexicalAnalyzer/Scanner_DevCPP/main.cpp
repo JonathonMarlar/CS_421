@@ -14,7 +14,7 @@ CS 421 - Automata Theory and Compiler Construction
 using namespace std;
 
 // a hash table to handle our numbers and identifiers
-unordered_map <string, int> idTable;
+unordered_map <string, Symbol> idTable;
 
 void PreProcessBuffer(string filename);
 void ProcessBuffer(string filename);
@@ -132,6 +132,9 @@ void ProcessBuffer(string filename)
 					// if we haven't hit a delimiter, add text to temp
 					temp = temp + *lookahead;
 					lookahead++;
+					
+					if (isdigit(*start) && isalpha(*lookahead))
+						break;
 				}
 				
 				// we need to keep up with what token it is
@@ -285,7 +288,10 @@ void ProcessBuffer(string filename)
 				cout << "\t" << token << "  " << temp << endl;
 				if (token == IDENTIFIER || token == NUM)
 				{
-					idTable[temp] = token;
+					Symbol s;
+					s.name = temp;
+					s.tokenCode = token;
+					idTable[temp] = s;
 				}
 				
 				if (token == -1)
@@ -293,7 +299,7 @@ void ProcessBuffer(string filename)
 				
 				// need to make sure the pointer ahead isn't null (i.e. end of line)
 				// parentheses are a special case since they are delimiters with no spacing between them
-				if (*lookahead != NULL && !isDelimiter(*lookahead) && *(lookahead-1) != '(')
+				if (*lookahead != NULL && !isDelimiter(*lookahead) && *(lookahead-1) != '(' && !isalpha(*lookahead))
 					start = lookahead + 1;
 				else
 					start = lookahead;
@@ -314,7 +320,9 @@ void printTable()
 {
 	for (auto itr = idTable.begin(); itr != idTable.end(); itr++)
 	{
-		cout << (*itr).first << " : " << (*itr).second << endl;
+		cout << (*itr).first << " : ";
+		Symbol s = (*itr).second;
+		cout << s.name << " " << s.tokenCode << endl;
 	}
 }
 

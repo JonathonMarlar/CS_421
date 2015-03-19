@@ -20,23 +20,28 @@ int getToken(string line, string expr, int goalTokenID)
 		tokenID = goalTokenID;
 
 	// if it's still an identifier, we need to check if it's legit
-	else if (goalTokenID == IDENTIFIER)
+	else if (tokenID == IDENTIFIER && goalTokenID != NUM)
 	{
 		for (int i = 0; i < line.length(); i++)
 		{
 			if (!(isalnum(line[i]) || line[i] == '_'))
+			{
 				tokenID = -1;
+				cout << "Error: Invalid identifier" << endl;
+				break;
+			}
 		}
 	}
 	
 	// or it could be a number
-	else if (goalTokenID == NUM)
+	else if (tokenID == IDENTIFIER && goalTokenID == NUM)
 	{
 		for (int i = 0; i < line.length(); i++)
 		{
 			if (!isdigit(line[i]))
 			{
 				tokenID = -1;
+				cout << "Error: Invalid identifier" << endl;
 				break;
 			}
 			else

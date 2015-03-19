@@ -9,11 +9,12 @@ CS 421 - Automata Theory and Compiler Construction
 #include <fstream>
 #include <regex>
 #include <cctype>
+#include <unordered_map>
 #include "dfa.h"
 using namespace std;
 
 // a hash table to handle our numbers and identifiers
-// unordered_map <string, int> idTable;
+unordered_map <string, int> idTable;
 
 void PreProcessBuffer(string filename);
 void ProcessBuffer(string filename);
@@ -30,7 +31,7 @@ int main(int argc, char** argv)
 	ProcessBuffer("clean.txt");
 	
 	// now we show off the table
-	// printTable();
+	printTable();
 
 	// any test cases or debugging functions should go here.
 
@@ -109,6 +110,7 @@ void ProcessBuffer(string filename)
 	if (cleanCode.is_open())
 	{
 		int lineNum = 1;
+		int errorCount = 0;
 		
 		while (getline(cleanCode, line))
 		{
@@ -132,70 +134,78 @@ void ProcessBuffer(string filename)
 					lookahead++;
 				}
 				
+				// we need to keep up with what token it is
+				int token;
+				
 				// now we need to choose our 'dfa' by looking at the start pointer
 				switch (*start)
 				{
 					case 'P':
 						{
-							cout << "\t" << getToken(temp, "PROGRAM", PROGRAM) << "  " << temp << endl;
+							token = getToken(temp, "PROGRAM", PROGRAM);
 							break;
 						}
 						
 					case 'V':
 						{
-							cout << "\t" << getToken(temp, "VAR", VAR) << "  " << temp << endl;
+							token = getToken(temp, "VAR", VAR);
 							break;
 						}
 					case 'B':
 						{
-							cout << "\t" << getToken(temp, "BEGIN", BEGIN) << "  " << temp << endl;
+							token = getToken(temp, "BEGIN", BEGIN);
 							break;
 						}
 					case 'E':
 						{
 							if (*(lookahead-1) == '.')
-								cout << "\t" << getToken(temp, "END.", ENDP) << "  " << temp << endl;
+							{
+								token = getToken(temp, "END.", ENDP);
+							}
 							else
-								cout << "\t" << getToken(temp, "END", END) << "  " << temp << endl;
+							{
+								token = getToken(temp, "END", END);
+							}
 							break;
 						}
 					case 'I':
 						{
-							cout << "\t" << getToken(temp, "INTEGER", INTEGER) << "  " << temp << endl;
+							token = getToken(temp, "INTEGER", INTEGER);
 							break;
 						}
 					case 'F':
 						{
-							cout << "\t" << getToken(temp, "FOR", FOR) << "  " << temp << endl;
+							token = getToken(temp, "FOR", FOR);
 							break;
 						}
 					case 'R':
 						{
-							cout << "\t" << getToken(temp, "READ", READ) << "  " << temp << endl;
+							token = getToken(temp, "READ", READ);
 							break;
 						}
 					case 'W':
 						{
-							cout << "\t" << getToken(temp, "WRITE", BEGIN) << "  " << temp << endl;
+							token = getToken(temp, "WRITE", BEGIN);
 							break;
 						}
 					case 'T':
 						{
-							cout << "\t" << getToken(temp, "TO", TO) << "  " << temp << endl;
+							token =  getToken(temp, "TO", TO);
 							break;
 						}
 					case 'D':
 						{
 							if (*(lookahead-1) == 'V')
-								cout << "\t" << getToken(temp, "DIV", DIV) << "  " << temp << endl;
+								token = getToken(temp, "DIV", DIV);
 							else
-								cout << "\t" << getToken(temp, "DO", DO) << "  " << temp << endl;
+								token = getToken(temp, "DO", DO);
 							break;
 						}
 					// Delimiters are usually left on their own, so we don't need a regex for them
 					case ';':
 						{
-							cout << "\t" << SEMICOLON << "  " << *start << endl;
+							token = SEMICOLON;
+							temp = temp + *start;
 							lookahead++;
 							break;
 						}
@@ -203,65 +213,85 @@ void ProcessBuffer(string filename)
 						{
 							if (*(lookahead+1) == '=')
 							{
-								cout << "\t" << EQUALS << "  " << *start << *(start+1) << endl;
+								token = EQUALS;
+								temp = temp + *start + *(start+1);
 								lookahead++;
 							}
 							else
-								cout << "\t" << COLON << "  " << *start << endl;
+							{
+								token = COLON;
+								temp = temp + *start;
+							}
 							lookahead++;
 							break;
 						}
 					case ',':
 						{
-							cout << "\t" << COMMA << "  " << *start << endl;
+							token = COMMA;
+							temp = temp + *start;
 							lookahead++;
 							break;
 						}
 					case '+':
 						{
-							cout << "\t" << PLUS << "  " << *start << endl;
+							token = PLUS;
 							break;
 						}
 					case '-':
 						{
-							cout << "\t" << MINUS << "  " << *start << endl;
+							token = MINUS;
 							break;
 						}
 					case '*':
 						{
-							cout << "\t" << TIMES << "  " << *start << endl;
+							token = TIMES;
 							break;
 						}
 					case '(':
 						{
-							cout << "\t" << LEFTPAREN << "  " << *start << endl;
+							token = LEFTPAREN;
+							temp = temp + *start;
 							lookahead++;
 							break;
 						}
 					case ')':
 						{
-							cout << "\t" << RIGHTPAREN << "  " << *start << endl;
+							token = RIGHTPAREN;
+							temp = temp + *start;
 							lookahead++;
 							break;
 						}
+					// our regex function checks for legit integers and ids, so we need to use it
 					case '0': case '1': case '2': case '3': case '4': case '5': 
 					case '6': case '7': case '8': case '9': 
 						{
-							int token = getToken(temp, "int", NUM);
-							cout << "\t" << token << "  " << temp << endl;
-							cout << "Hi" << endl;
-							// idTable[temp] = token;
+							token = getToken(temp, "", NUM);
 							break;	
 						}
 					default:
 						{
-							int token = getToken(temp, "", IDENTIFIER);
-							cout << "\t" << token << "  " << temp << endl;
+							if (isalpha(*start))
+								token = getToken(temp, "", IDENTIFIER);
+							else
+							{
+								cout << "Error: unrecognized token" << endl;
+								token = -1;
+							}
 							break;	
 						}
 				}
 				
-				// need to make sure the pointer ahead isn't null
+				// after the token has been found, print it out & put it in the symbol table if needed
+				cout << "\t" << token << "  " << temp << endl;
+				if (token == IDENTIFIER || token == NUM)
+				{
+					idTable[temp] = token;
+				}
+				
+				if (token == -1)
+					errorCount++;
+				
+				// need to make sure the pointer ahead isn't null (i.e. end of line)
 				// parentheses are a special case since they are delimiters with no spacing between them
 				if (*lookahead != NULL && !isDelimiter(*lookahead) && *(lookahead-1) != '(')
 					start = lookahead + 1;
@@ -270,9 +300,16 @@ void ProcessBuffer(string filename)
 			}
 		}
 		cleanCode.close();
+		// now print out the final tally of lines and errors found.
+		cout << endl << lineNum-1 << " Lines, " << errorCount << " Errors" << endl;
 	}
 }
+
 /*
+printTable:
+	- Prints out the symbol table
+	- No need for parameters, idTable is global here
+*/
 void printTable()
 {
 	for (auto itr = idTable.begin(); itr != idTable.end(); itr++)
@@ -280,4 +317,4 @@ void printTable()
 		cout << (*itr).first << " : " << (*itr).second << endl;
 	}
 }
-*/
+

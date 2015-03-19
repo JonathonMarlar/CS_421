@@ -2,7 +2,6 @@
 #include <string>
 #include <regex>
 #include <cctype>
-#include <unordered_map>
 #include "dfa.h"
 using namespace std;
 

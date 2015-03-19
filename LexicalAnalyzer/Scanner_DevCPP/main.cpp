@@ -12,20 +12,25 @@ CS 421 - Automata Theory and Compiler Construction
 #include "dfa.h"
 using namespace std;
 
+// a hash table to handle our numbers and identifiers
+// unordered_map <string, int> idTable;
+
 void PreProcessBuffer(string filename);
 void ProcessBuffer(string filename);
+void printTable();
 
 // DFA functions may go into another file entirely.
 
 int main(int argc, char** argv)
 {
-	// Set up the symbol table here
-
 	// Call the pre-processing buffer here
 	PreProcessBuffer("example.txt");
 
 	// Call the processing buffer here
 	ProcessBuffer("clean.txt");
+	
+	// now we show off the table
+	// printTable();
 
 	// any test cases or debugging functions should go here.
 
@@ -242,12 +247,16 @@ void ProcessBuffer(string filename)
 					case '0': case '1': case '2': case '3': case '4': case '5': 
 					case '6': case '7': case '8': case '9': 
 						{
-							cout << "\t" << getToken(temp, "(0-9)+", NUM) << "  " << temp << endl;
+							int token = getToken(temp, "int", NUM);
+							cout << "\t" << token << "  " << temp << endl;
+							cout << "Hi" << endl;
+							// idTable[temp] = token;
 							break;	
 						}
 					default:
 						{
-							cout << "\t" << getToken(temp, "N", IDENTIFIER) << "  " << temp << endl;
+							int token = getToken(temp, "", IDENTIFIER);
+							cout << "\t" << token << "  " << temp << endl;
 							break;	
 						}
 				}
@@ -263,3 +272,12 @@ void ProcessBuffer(string filename)
 		cleanCode.close();
 	}
 }
+/*
+void printTable()
+{
+	for (auto itr = idTable.begin(); itr != idTable.end(); itr++)
+	{
+		cout << (*itr).first << " : " << (*itr).second << endl;
+	}
+}
+*/

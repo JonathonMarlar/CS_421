@@ -24,8 +24,13 @@ void printTable();
 
 int main(int argc, char** argv)
 {
+	// Small little interface to ask for code file
+	string fname;
+	cout << "Enter the filename of the code you want to run: ";
+	cin >> fname;
+	
 	// Call the pre-processing buffer here
-	PreProcessBuffer("example.txt");
+	PreProcessBuffer(fname);
 
 	// Call the processing buffer here
 	ProcessBuffer("clean.txt");
@@ -318,6 +323,7 @@ printTable:
 */
 void printTable()
 {
+	cout << "\n-- Symbol Table --\n" << endl;
 	for (auto itr = idTable.begin(); itr != idTable.end(); itr++)
 	{
 		cout << (*itr).first << " : ";

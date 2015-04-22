@@ -1,0 +1,11 @@
+PROGRAM <prog-name>
+VAR
+    <dec-list>
+BEGIN
+    <stmt-list>
+END.
+
+
+<exp>       ::= <term> { + <term> | - <term> }
+<term>      ::= <factor> { * <factor> | DIV <factor> }
+<factor>    ::= id | int | ( <exp> )
